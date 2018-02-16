@@ -1,7 +1,52 @@
 import { Component } from 'react'
 import { Button, Form, FormGroup, Label, Input, FormText } from 'reactstrap';
+import Login from './components/Login'
+import Index from './components/Index'
 
-import './App.css'
+import Auth from './lib/Auth'
+const auth = new Auth();
+
+const handleAuthentication = ({location}) => {
+  if (/access_token|id_token|error/.test(location.hash)) {
+    auth.handleAuthentication();
+  }
+}
+
+import { Route, Switch, Link, Redirect } from 'react-router-dom'
+
+const MainLayout = props => (
+  <div>
+    <h1>Main Layout</h1>
+    {props.children}
+  </div>
+)
+
+const SingleFormLayout = props => (
+  <div>
+    <p>single form</p>
+    {props.children}
+  </div>
+)
+
+const SessionRoute = ({ component: Component, layout: Layout, ...rest }) => (
+  <Route {...rest} render={props => (
+    false ? (
+      <Redirect to="/"/>
+    ) : (
+    <Layout>
+      <Component {...props} />
+    </Layout>
+    )
+  )} />
+)
+
+const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (
+  <Route {...rest} render={props => (
+    <Layout>
+      <Component {...props} {...rest} />
+    </Layout>
+  )} />
+)
 
 export default class App extends Component {
   state = {
@@ -23,9 +68,6 @@ export default class App extends Component {
           <div className="overlay"></div>
           <div className="container">
             <div className="row">
-              <div className="col-xl-9 mx-auto">
-                <h1 className="mb-5">Welcome to {this.state.name}</h1>
-              </div>
               <div className="col-md-10 col-lg-8 col-xl-7 mx-auto">
                 <form>
                   <div className="form-row">
@@ -42,18 +84,10 @@ export default class App extends Component {
           </div>
         </header>
 
-        <Form className="form-signin">
-          <h3 className="h3 mb-3 font-weight-normal">Please sign in</h3>
-          <FormGroup>
-            <Label for= "inputEmail">Email address</Label>
-            <Input type="email" name="email" id="inputEmail" placeholder="Email address" required />
-          </FormGroup>
-          <FormGroup>
-            <Label for="password">Password</Label>
-            <Input type="password" name="password" id="password" placeholder="Your password" required />
-          </FormGroup>
-          <Button color="primary">Sign in</Button>
-        </Form>
+        <Switch>
+          <AppRoute exact path="/" layout={MainLayout} auth={auth} component={Index} />
+          <SessionRoute exact path="/login" layout={SingleFormLayout} auth={auth} component={Login} />
+        </Switch>
 
         <footer className="footer bg-light">
           <div className="container">

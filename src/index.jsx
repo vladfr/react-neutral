@@ -1,15 +1,16 @@
 import { render } from 'react-dom'
 import { AppContainer } from 'react-hot-loader'
 
-import 'bootstrap/scss/bootstrap.scss'
+import './scss/main.scss'
 
 import App from './App'
+import { BrowserRouter } from 'react-router-dom'
 
 const root = document.getElementById('root');
 const load = () => render((
-  <AppContainer>
+  <BrowserRouter>
     <App />
-  </AppContainer>
+  </BrowserRouter>
 ), root);
 
 // This is needed for Hot Module Replacement
